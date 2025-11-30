@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mavis - Interactive Landing Page</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .landing-container {
+      width: 100%;
+      min-height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1.5rem;
+    }
+
+    .content-wrapper {
+      max-width: 1200px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      margin-bottom: 3rem;
+    }
+
+    .text-content {
+      color: #ffffff;
+    }
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin: 0 0 1rem 0;
+      line-height: 1.2;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      margin: 0 0 2rem 0;
+      opacity: 0.95;
+      line-height: 1.6;
+      animation: fadeInUp 0.8s ease-out 0.2s backwards;
+    }
+
+    .cta-button {
+      background-color: #ffffff;
+      color: #667eea;
+      border: none;
+      padding: 1rem 2.5rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.8s ease-out 0.4s backwards;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      background-color: #f0f0f0;
+    }
+
+    .cta-button:active {
+      transform: translateY(-1px);
+    }
+
+    .character-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeInRight 1s ease-out 0.3s backwards;
+    }
+
+    .character-card {
+      background-color: #ffffff;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .character-card:hover {
+      transform: scale(1.05) rotate(2deg);
+    }
+
+    .mavis-svg {
+      width: 300px;
+      height: 300px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .footer {
+      text-align: center;
+      color: #ffffff;
+      font-size: 0.875rem;
+      opacity: 0.8;
+      margin-top: 2rem;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(50px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
+      .mavis-svg {
+        width: 250px;
+        height: 250px;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <main class="landing-container">
+   <div class="content-wrapper">
+    <div class="text-content">
+     <h1 class="hero-title" id="heroTitle">Meet Mavis</h1>
+     <p class="hero-subtitle" id="heroSubtitle">Your creative companion for amazing experiences</p><button class="cta-button" id="ctaButton">Get Started</button>
+    </div>
+    <div class="character-container">
+     <div class="character-card">
+      <svg class="mavis-svg" viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><!-- Head --> <ellipse cx="100" cy="90" rx="45" ry="50" fill="#8B4513" /> <!-- Ears --> <ellipse cx="65" cy="85" rx="8" ry="12" fill="#6B3410" /> <ellipse cx="135" cy="85" rx="8" ry="12" fill="#6B3410" /> <!-- Hair (low cut) --> <path d="M 55 60 Q 55 40 75 35 Q 100 30 125 35 Q 145 40 145 60 L 145 75 Q 100 65 55 75 Z" fill="#000000" /> <!-- Face highlight --> <ellipse cx="100" cy="95" rx="40" ry="45" fill="#A0522D" /> <!-- Eyes --> <ellipse cx="85" cy="85" rx="6" ry="8" fill="#FFFFFF" /> <ellipse cx="115" cy="85" rx="6" ry="8" fill="#FFFFFF" /> <circle cx="86" cy="86" r="3" fill="#000000" /> <circle cx="116" cy="86" r="3" fill="#000000" /> <!-- Eyebrows --> <path d="M 78 75 Q 85 73 92 75" stroke="#000000" stroke-width="2" fill="none" stroke-linecap="round" /> <path d="M 108 75 Q 115 73 122 75" stroke="#000000" stroke-width="2" fill="none" stroke-linecap="round" /> <!-- Nose --> <ellipse cx="100" cy="95" rx="4" ry="5" fill="#6B3410" /> <!-- Smile --> <path d="M 85 105 Q 100 112 115 105" stroke="#000000" stroke-width="2.5" fill="none" stroke-linecap="round" /> <!-- Neck --> <rect x="85" y="130" width="30" height="20" fill="#8B4513" /> <!-- Body/Shirt --> <path d="M 60 150 L 85 145 L 100 150 L 115 145 L 140 150 L 140 200 L 60 200 Z" fill="#4A90E2" /> <!-- Arms --> <ellipse cx="50" cy="165" rx="12" ry="30" fill="#8B4513" transform="rotate(-20 50 165)" /> <ellipse cx="150" cy="165" rx="12" ry="30" fill="#8B4513" transform="rotate(20 150 165)" />
+      </svg>
+     </div>
+    </div>
+   </div>
+   <footer class="footer" id="footerText">
+    © 2024 Mavis. All rights reserved.
+   </footer>
+  </main>
+  <script>
+    const defaultConfig = {
+      background_color: "#667eea",
+      surface_color: "#ffffff",
+      text_color: "#ffffff",
+      primary_action_color: "#ffffff",
+      secondary_action_color: "#f0f0f0",
+      font_family: "Inter",
+      font_size: 16,
+      hero_title: "Meet Mavis",
+      hero_subtitle: "Your creative companion for amazing experiences",
+      cta_button_text: "Get Started",
+      footer_text: "© 2024 Mavis. All rights reserved."
+    };
+
+    async function onConfigChange(config) {
+      const customFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      const baseSize = config.font_size || defaultConfig.font_size;
+      
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const primaryActionColor = config.primary_action_color || defaultConfig.primary_action_color;
+      const secondaryActionColor = config.secondary_action_color || defaultConfig.secondary_action_color;
+
+      // Apply colors
+      document.querySelector('.landing-container').style.background = `linear-gradient(135deg, ${backgroundColor} 0%, ${backgroundColor}dd 100%)`;
+      document.querySelector('.character-card').style.backgroundColor = surfaceColor;
+      document.querySelectorAll('.text-content, .footer').forEach(el => {
+        el.style.color = textColor;
+      });
+      
+      const ctaButton = document.getElementById('ctaButton');
+      ctaButton.style.backgroundColor = primaryActionColor;
+      ctaButton.style.color = backgroundColor;
+      
+      // Apply fonts
+      document.querySelector('.hero-title').style.fontFamily = `${customFont}, ${baseFontStack}`;
+      document.querySelector('.hero-subtitle').style.fontFamily = `${customFont}, ${baseFontStack}`;
+      document.querySelector('.cta-button').style.fontFamily = `${customFont}, ${baseFontStack}`;
+      document.querySelector('.footer').style.fontFamily = `${customFont}, ${baseFontStack}`;
+      
+      // Apply font sizes
+      document.querySelector('.hero-title').style.fontSize = `${baseSize * 1.875}px`;
+      document.querySelector('.hero-subtitle').style.fontSize = `${baseSize * 0.78}px`;
+      document.querySelector('.cta-button').style.fontSize = `${baseSize * 0.7}px`;
+      document.querySelector('.footer').style.fontSize = `${baseSize * 0.55}px`;
+      
+      // Apply text content
+      document.getElementById('heroTitle').textContent = config.hero_title || defaultConfig.hero_title;
+      document.getElementById('heroSubtitle').textContent = config.hero_subtitle || defaultConfig.hero_subtitle;
+      document.getElementById('ctaButton').textContent = config.cta_button_text || defaultConfig.cta_button_text;
+      document.getElementById('footerText').textContent = config.footer_text || defaultConfig.footer_text;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              config.background_color = value;
+              window.elementSdk.setConfig({ background_color: value });
+            }
+          },
+          {
+            get: () => config.surface_color || defaultConfig.surface_color,
+            set: (value) => {
+              config.surface_color = value;
+              window.elementSdk.setConfig({ surface_color: value });
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              config.text_color = value;
+              window.elementSdk.setConfig({ text_color: value });
+            }
+          },
+          {
+            get: () => config.primary_action_color || defaultConfig.primary_action_color,
+            set: (value) => {
+              config.primary_action_color = value;
+              window.elementSdk.setConfig({ primary_action_color: value });
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => {
+            config.font_family = value;
+            window.elementSdk.setConfig({ font_family: value });
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => {
+            config.font_size = value;
+            window.elementSdk.setConfig({ font_size: value });
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["hero_title", config.hero_title || defaultConfig.hero_title],
+        ["hero_subtitle", config.hero_subtitle || defaultConfig.hero_subtitle],
+        ["cta_button_text", config.cta_button_text || defaultConfig.cta_button_text],
+        ["footer_text", config.footer_text || defaultConfig.footer_text]
+      ]);
+    }
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Button interaction
+    document.getElementById('ctaButton').addEventListener('click', function(e) {
+      e.preventDefault();
+      this.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        this.style.transform = '';
+      }, 200);
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a699c81e1830488',t:'MTc2NDQ5ODAxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
