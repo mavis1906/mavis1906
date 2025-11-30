@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 100%;
+      height: 100%;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      height: 100%;
+    }
+
+    .page-wrapper {
+      width: 100%;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    header {
+      width: 100%;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .site-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+    }
+
+    .tagline {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.9);
+      margin: 0;
+    }
+
+    nav {
+      display: flex;
+      gap: 2rem;
+    }
+
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      transition: opacity 0.3s ease;
+      cursor: pointer;
+    }
+
+    nav a:hover {
+      opacity: 0.8;
+    }
+
+    main {
+      flex: 1;
+      width: 100%;
+      padding: 4rem 2rem;
+    }
+
+    .section {
+      max-width: 1200px;
+      margin: 0 auto 4rem auto;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 3rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .section h2 {
+      font-size: 2.5rem;
+      color: #667eea;
+      margin: 0 0 1.5rem 0;
+      font-weight: 700;
+    }
+
+    .section p {
+      font-size: 1.1rem;
+      color: #333333;
+      line-height: 1.8;
+      margin: 0;
+    }
+
+    footer {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 2rem;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .creator-text {
+      color: #ffffff;
+      font-size: 1rem;
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      .header-content {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      nav {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .section {
+        padding: 2rem;
+      }
+
+      .section h2 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="page-wrapper">
+   <header>
+    <div class="header-content">
+     <div>
+      <h1 class="site-title" id="siteTitle">My Portfolio</h1>
+      <p class="tagline" id="tagline">Building amazing experiences</p>
+     </div>
+     <nav><a href="#home">Home</a> <a href="#about">About</a> <a href="#dev">Dev</a>
+     </nav>
+    </div>
+   </header>
+   <main>
+    <section id="home" class="section">
+     <h2 id="homeHeading">Welcome</h2>
+     <p id="homeDescription">This is the home section where you can introduce yourself and your work. Share your passion and what drives you to create amazing things.</p>
+    </section>
+    <section id="about" class="section">
+     <h2 id="aboutHeading">About</h2>
+     <p id="aboutDescription">Learn more about my background, skills, and experience. I'm passionate about creating beautiful and functional digital experiences that make a difference.</p>
+    </section>
+    <section id="dev" class="section">
+     <h2 id="devHeading">Development</h2>
+     <p id="devDescription">Explore my development projects and technical expertise. From web applications to creative coding, I love bringing ideas to life through code.</p>
+    </section>
+   </main>
+   <footer>
+    <div class="footer-content">
+     <p class="creator-text" id="creatorText">Created by Mavis</p>
+    </div>
+   </footer>
+  </div>
+  <script>
+    const defaultConfig = {
+      site_title: "My Portfolio",
+      tagline: "Building amazing experiences",
+      home_heading: "Welcome",
+      home_description: "This is the home section where you can introduce yourself and your work. Share your passion and what drives you to create amazing things.",
+      about_heading: "About",
+      about_description: "Learn more about my background, skills, and experience. I'm passionate about creating beautiful and functional digital experiences that make a difference.",
+      dev_heading: "Development",
+      dev_description: "Explore my development projects and technical expertise. From web applications to creative coding, I love bringing ideas to life through code.",
+      creator_name: "Mavis",
+      background_color: "#667eea",
+      surface_color: "#ffffff",
+      text_color: "#333333",
+      primary_color: "#667eea",
+      secondary_color: "#764ba2",
+      font_family: "Inter",
+      font_size: 16
+    };
+
+    async function onConfigChange(config) {
+      const baseFont = config.font_family || defaultConfig.font_family;
+      const baseFontStack = `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif`;
+      const fontSize = config.font_size || defaultConfig.font_size;
+
+      document.body.style.fontFamily = `${baseFont}, ${baseFontStack}`;
+      document.body.style.fontSize = `${fontSize}px`;
+
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+      document.querySelector('.page-wrapper').style.background = `linear-gradient(135deg, ${backgroundColor} 0%, ${secondaryColor} 100%)`;
+
+      const surfaceColor = config.surface_color || defaultConfig.surface_color;
+      document.querySelectorAll('.section').forEach(section => {
+        section.style.backgroundColor = surfaceColor;
+      });
+
+      const textColor = config.text_color || defaultConfig.text_color;
+      document.querySelectorAll('.section p').forEach(p => {
+        p.style.color = textColor;
+      });
+
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      document.querySelectorAll('.section h2').forEach(h2 => {
+        h2.style.color = primaryColor;
+      });
+
+      document.querySelector('.site-title').style.fontSize = `${fontSize * 1.8}px`;
+      document.querySelector('.tagline').style.fontSize = `${fontSize * 0.9}px`;
+      document.querySelectorAll('nav a').forEach(a => {
+        a.style.fontSize = `${fontSize}px`;
+      });
+      document.querySelectorAll('.section h2').forEach(h2 => {
+        h2.style.fontSize = `${fontSize * 2.5}px`;
+      });
+      document.querySelectorAll('.section p').forEach(p => {
+        p.style.fontSize = `${fontSize * 1.1}px`;
+      });
+      document.querySelector('.creator-text').style.fontSize = `${fontSize}px`;
+
+      document.getElementById('siteTitle').textContent = config.site_title || defaultConfig.site_title;
+      document.getElementById('tagline').textContent = config.tagline || defaultConfig.tagline;
+      document.getElementById('homeHeading').textContent = config.home_heading || defaultConfig.home_heading;
+      document.getElementById('homeDescription').textContent = config.home_description || defaultConfig.home_description;
+      document.getElementById('aboutHeading').textContent = config.about_heading || defaultConfig.about_heading;
+      document.getElementById('aboutDescription').textContent = config.about_description || defaultConfig.about_description;
+      document.getElementById('devHeading').textContent = config.dev_heading || defaultConfig.dev_heading;
+      document.getElementById('devDescription').textContent = config.dev_description || defaultConfig.dev_description;
+      document.getElementById('creatorText').textContent = `Created by ${config.creator_name || defaultConfig.creator_name}`;
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.surface_color || defaultConfig.surface_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ surface_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.primary_color || defaultConfig.primary_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.secondary_color || defaultConfig.secondary_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ secondary_color: value });
+              }
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: {
+          get: () => config.font_family || defaultConfig.font_family,
+          set: (value) => {
+            if (window.elementSdk) {
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          }
+        },
+        fontSizeable: {
+          get: () => config.font_size || defaultConfig.font_size,
+          set: (value) => {
+            if (window.elementSdk) {
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["site_title", config.site_title || defaultConfig.site_title],
+        ["tagline", config.tagline || defaultConfig.tagline],
+        ["home_heading", config.home_heading || defaultConfig.home_heading],
+        ["home_description", config.home_description || defaultConfig.home_description],
+        ["about_heading", config.about_heading || defaultConfig.about_heading],
+        ["about_description", config.about_description || defaultConfig.about_description],
+        ["dev_heading", config.dev_heading || defaultConfig.dev_heading],
+        ["dev_description", config.dev_description || defaultConfig.dev_description],
+        ["creator_name", config.creator_name || defaultConfig.creator_name]
+      ]);
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href').substring(1);
+        const targetSection = document.getElementById(targetId);
+        if (targetSection) {
+          targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a698ad061afd982',t:'MTc2NDQ5NzI5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
