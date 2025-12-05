@@ -1,0 +1,349 @@
+<!doctype html>
+<!--
+  Simple Social Website (single-file)
+  - HTML / CSS / JavaScript
+  - Features: sign-in mock (localStorage), create posts, like, comment, edit profile, search, responsive
+  - Persistence via localStorage (no backend). Good for prototype and learning.
+  - Accessibility: semantic elements, form labels, keyboard focus states
+  - Instructions: open this file in a browser. All functionality runs client-side.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MiniSocial — Prototype</title>
+  <style>
+    :root{
+      --bg:#0f1724; --card:#0b1220; --muted:#94a3b8; --accent:#06b6d4; --glass: rgba(255,255,255,0.03);
+      --radius:14px; --max-width:1100px;
+      color-scheme: dark;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;
+      background:linear-gradient(180deg,#071022 0%, #081226 60%); color:#e6eef6; -webkit-font-smoothing:antialiased;
+      display:flex;align-items:flex-start;justify-content:center;padding:28px;
+    }
+    .container{width:100%;max-width:var(--max-width);display:grid;grid-template-columns:300px 1fr 320px;gap:20px}
+
+    header.app-header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-radius:12px;background:var(--glass);backdrop-filter: blur(6px);box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#6366f1);display:grid;place-items:center;font-weight:700}
+    .controls{display:flex;gap:8px;align-items:center}
+    button{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:inherit;cursor:pointer}
+    input[type=text], textarea{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:10px;border-radius:10px;color:inherit;width:100%}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:14px;border-radius:var(--radius);box-shadow:0 6px 14px rgba(2,6,23,0.6);}
+
+    /* Left column */
+    .left .profile{display:flex;gap:12px;align-items:center}
+    .avatar{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,#1e293b,#0ea5a3);display:grid;place-items:center;font-weight:700}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* Middle / Feed */
+    .create-post{display:grid;gap:8px}
+    .post{margin-top:12px;padding:12px;display:grid;gap:8px}
+    .post .meta{display:flex;justify-content:space-between;align-items:center}
+    .post .body{white-space:pre-wrap}
+    .actions{display:flex;gap:8px}
+    .like.btn-active{color:var(--accent);font-weight:600}
+
+    /* Right */
+    .right .search{display:flex;gap:8px}
+    .trending li{padding:8px 0;border-bottom:1px dashed rgba(255,255,255,0.02)}
+
+    /* responsiveness */
+    @media (max-width:1000px){.container{grid-template-columns:1fr;}.right,.left{order:2}.left{order:1}.app-header{flex-direction:column;gap:10px}}
+
+    /* small helpers */
+    .muted{color:var(--muted)}
+    .flex{display:flex;align-items:center;gap:8px}
+    a{color:var(--accent);text-decoration:none}
+
+    /* focus states */
+    :focus{outline:3px solid rgba(6,182,212,0.12);outline-offset:2px}
+
+  </style>
+</head>
+<body>
+  <main class="container" id="app">
+    <header class="app-header card" role="banner">
+      <div class="brand">
+        <div class="logo" aria-hidden>MS</div>
+        <div>
+          <div style="font-weight:700">MiniSocial</div>
+          <div class="small muted">A tiny social prototype</div>
+        </div>
+      </div>
+      <div class="controls">
+        <input id="searchInput" type="text" placeholder="Search posts or users" aria-label="Search posts or users" />
+        <button id="toggleAuthBtn">Sign in</button>
+      </div>
+    </header>
+
+    <!-- Left column: profile & nav -->
+    <aside class="left">
+      <section class="card profile">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="avatar" id="profileAvatar">U</div>
+          <div>
+            <div id="profileName" style="font-weight:700">Guest</div>
+            <div class="small muted" id="profileHandle">@guest</div>
+          </div>
+        </div>
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <button id="editProfileBtn">Edit profile</button>
+          <button id="clearDataBtn">Clear data</button>
+        </div>
+      </section>
+
+      <nav class="card" style="margin-top:12px;padding:12px">
+        <ul style="list-style:none;padding:0;margin:0;display:grid;gap:10px">
+          <li><a href="#feed">Home</a></li>
+          <li><a href="#trending">Trending</a></li>
+          <li><a href="#bookmarks">Bookmarks</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Middle column: create + feed -->
+    <section id="feed" class="card">
+      <form id="postForm" class="create-post" autocomplete="off">
+        <label for="postText" class="small muted">Create a post</label>
+        <textarea id="postText" rows="3" maxlength="1000" placeholder="What's happening? (Press Ctrl+Enter to post)"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="small muted" id="charsLeft">1000 characters left</div>
+          <div style="display:flex;gap:8px">
+            <button type="button" id="attachBtn">Attach</button>
+            <button type="submit" id="postBtn">Post</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="postsList" style="margin-top:18px"></div>
+    </section>
+
+    <!-- Right column: search / trending -->
+    <aside class="right">
+      <section class="card search">
+        <label class="small muted">Search results</label>
+        <div id="searchResults" class="small muted">Start typing to search posts or users.</div>
+      </section>
+
+      <section class="card trending" style="margin-top:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="font-weight:700">Trending</div>
+          <div class="small muted">live</div>
+        </div>
+        <ul id="trendingList" style="margin-top:10px;padding:0;list-style:none"></ul>
+      </section>
+    </aside>
+
+  </main>
+
+  <!-- Edit profile modal (simple) -->
+  <dialog id="profileDialog">
+    <form method="dialog" id="profileForm" style="display:grid;gap:8px;min-width:320px">
+      <h3>Edit profile</h3>
+      <label for="name">Full name</label>
+      <input id="name" type="text" />
+      <label for="handle">Handle (no spaces)</label>
+      <input id="handle" type="text" />
+      <label for="bio">Bio</label>
+      <textarea id="bio" rows="3"></textarea>
+      <menu style="display:flex;gap:8px;justify-content:flex-end">
+        <button id="saveProfile">Save</button>
+        <button type="reset">Reset</button>
+      </menu>
+    </form>
+  </dialog>
+
+<script>
+/* ---------- Data model & persistence ---------- */
+const STORAGE_KEY = 'minisocial:v1';
+let state = {
+  user: { name: 'Guest', handle: 'guest', bio: '', avatarLetter: 'G', signedIn: false },
+  posts: [], // {id, author:{name,handle}, text, createdAt, likes:[], comments: [{id, handle, text, createdAt}] }
+};
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ state = JSON.parse(raw); }
+  }catch(e){console.error('load failed',e)}
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+/* ---------- Utilities ---------- */
+function uid(prefix='id'){return prefix + '_' + Math.random().toString(36).slice(2,9)}
+function timeAgo(ts){ const diff = Math.floor((Date.now()-ts)/1000); if(diff<60) return diff+'s'; if(diff<3600) return Math.floor(diff/60)+'m'; if(diff<86400) return Math.floor(diff/3600)+'h'; return Math.floor(diff/86400)+'d'}
+
+/* ---------- Rendering ---------- */
+const postsList = document.getElementById('postsList');
+const profileName = document.getElementById('profileName');
+const profileHandle = document.getElementById('profileHandle');
+const profileAvatar = document.getElementById('profileAvatar');
+const charsLeft = document.getElementById('charsLeft');
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+const trendingList = document.getElementById('trendingList');
+const toggleAuthBtn = document.getElementById('toggleAuthBtn');
+
+function renderProfile(){
+  profileName.textContent = state.user.name;
+  profileHandle.textContent = '@' + state.user.handle;
+  profileAvatar.textContent = state.user.avatarLetter || state.user.name[0] || 'U';
+  toggleAuthBtn.textContent = state.user.signedIn? 'Sign out' : 'Sign in';
+}
+
+function renderPosts(filter=''){
+  postsList.innerHTML = '';
+  const posts = [...state.posts].sort((a,b)=>b.createdAt - a.createdAt);
+  const visible = posts.filter(p => {
+    if(!filter) return true;
+    const f = filter.toLowerCase();
+    return p.text.toLowerCase().includes(f) || p.author.name.toLowerCase().includes(f) || p.author.handle.toLowerCase().includes(f);
+  });
+  if(visible.length===0){ postsList.innerHTML = '<div class="small muted">No posts yet — be the first!</div>'; return }
+
+  visible.forEach(p => {
+    const el = document.createElement('article'); el.className='card post';
+    el.innerHTML = `
+      <div class="meta">
+        <div class="flex"><div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,#0ea5a3,#6366f1);display:grid;place-items:center;font-weight:700">${p.author.name[0]||'U'}</div>
+          <div style="margin-left:8px"><div style="font-weight:700">${escapeHtml(p.author.name)}</div><div class="small muted">@${escapeHtml(p.author.handle)} • ${timeAgo(p.createdAt)}</div></div>
+        </div>
+        <div class="small muted">${p.likes.length} ♥</div>
+      </div>
+      <div class="body">${escapeHtml(p.text)}</div>
+      <div class="actions">
+        <button data-action="like" data-id="${p.id}" class="like ${p.likes.includes(state.user.handle)?'btn-active':''}">Like</button>
+        <button data-action="comment" data-id="${p.id}">Comment</button>
+        ${p.author.handle === state.user.handle ? `<button data-action="delete" data-id="${p.id}">Delete</button>`: ''}
+      </div>
+      <div class="comments small muted" id="comments_${p.id}"></div>
+    `;
+    postsList.appendChild(el);
+    renderComments(p.id);
+  });
+}
+
+function renderComments(postId){
+  const holder = document.getElementById('comments_' + postId);
+  const post = state.posts.find(p=>p.id===postId);
+  if(!post) return;
+  if(post.comments.length===0){ holder.innerHTML = '<div class="small muted">No comments</div>'; return }
+  holder.innerHTML = post.comments.map(c => `<div style="margin-top:6px"><strong>@${escapeHtml(c.handle)}</strong>: ${escapeHtml(c.text)} <span class="small muted">• ${timeAgo(c.createdAt)}</span></div>`).join('');
+}
+
+function renderTrending(){
+  // simple trending based on likes and comments count
+  const list = [...state.posts].sort((a,b)=> (b.likes.length + b.comments.length) - (a.likes.length + a.comments.length)).slice(0,6);
+  trendingList.innerHTML = list.map(p=>`<li><strong>@${escapeHtml(p.author.handle)}</strong>: ${escapeHtml(truncate(p.text,60))}</li>`).join('') || '<li class="small muted">No trending yet</li>';
+}
+
+/* ---------- Form handling ---------- */
+const postForm = document.getElementById('postForm');
+const postText = document.getElementById('postText');
+postText.addEventListener('input', ()=>{ charsLeft.textContent = (1000 - postText.value.length) + ' characters left' })
+postForm.addEventListener('submit', e=>{ e.preventDefault(); submitPost(); });
+postText.addEventListener('keydown', e=>{ if((e.ctrlKey||e.metaKey) && e.key==='Enter'){ submitPost(); } });
+
+function submitPost(){
+  const text = postText.value.trim(); if(!text) return alert('Write something to post');
+  const post = { id: uid('post'), author: { name: state.user.name, handle: state.user.handle }, text, createdAt: Date.now(), likes: [], comments: [] };
+  state.posts.push(post); saveState(); postText.value=''; charsLeft.textContent='1000 characters left'; renderAll();
+}
+
+/* ---------- Actions: like, comment, delete ---------- */
+document.addEventListener('click', e=>{
+  const btn = e.target.closest('button[data-action]'); if(!btn) return;
+  const action = btn.dataset.action; const id = btn.dataset.id;
+  if(action==='like') toggleLike(id);
+  if(action==='comment') promptComment(id);
+  if(action==='delete') deletePost(id);
+});
+
+function toggleLike(postId){
+  const p = state.posts.find(x=>x.id===postId); if(!p) return;
+  const idx = p.likes.indexOf(state.user.handle);
+  if(idx===-1) p.likes.push(state.user.handle); else p.likes.splice(idx,1);
+  saveState(); renderAll();
+}
+
+function promptComment(postId){
+  const text = prompt('Write a comment:'); if(!text) return;
+  const p = state.posts.find(x=>x.id===postId); if(!p) return;
+  p.comments.push({ id: uid('c'), handle: state.user.handle, text: text.slice(0,400), createdAt: Date.now() });
+  saveState(); renderAll();
+}
+
+function deletePost(postId){
+  if(!confirm('Delete this post?')) return;
+  state.posts = state.posts.filter(p=>p.id!==postId); saveState(); renderAll();
+}
+
+/* ---------- Search ---------- */
+searchInput.addEventListener('input', e=>{ const q = e.target.value.trim(); if(!q) { searchResults.textContent = 'Start typing to search posts or users.'; renderAll(); return } const resultsPosts = state.posts.filter(p=> p.text.toLowerCase().includes(q.toLowerCase())); const resultsUsers = (state.user.handle.includes(q) || state.user.name.toLowerCase().includes(q.toLowerCase())) ? [state.user] : [];
+  const lines = [];
+  if(resultsUsers.length) lines.push('Users: ' + resultsUsers.map(u=>u.handle).join(', '));
+  if(resultsPosts.length) lines.push(resultsPosts.slice(0,5).map(p=>`@${p.author.handle}: ${truncate(p.text,80)}`).join('\n'));
+  searchResults.textContent = lines.join('\n') || 'No results';
+  renderPosts(q);
+});
+
+/* ---------- Auth / Profile ---------- */
+const profileDialog = document.getElementById('profileDialog');
+const editProfileBtn = document.getElementById('editProfileBtn');
+const saveProfileBtn = document.getElementById('saveProfile');
+editProfileBtn.addEventListener('click', ()=>{ document.getElementById('name').value = state.user.name; document.getElementById('handle').value = state.user.handle; document.getElementById('bio').value = state.user.bio; profileDialog.showModal(); });
+
+saveProfileBtn.addEventListener('click', ()=>{
+  const name = document.getElementById('name').value.trim()||'Guest';
+  let handle = document.getElementById('handle').value.trim()||'guest'; handle = handle.replace(/\s+/g,'').toLowerCase();
+  const bio = document.getElementById('bio').value.trim();
+  state.user.name = name; state.user.handle = handle; state.user.bio = bio; state.user.avatarLetter = name[0]?.toUpperCase()||'G';
+  state.user.signedIn = true; saveState(); renderAll(); profileDialog.close();
+});
+
+// simple sign in/out toggle (no password — prototype)
+toggleAuthBtn.addEventListener('click', ()=>{
+  if(state.user.signedIn){ // sign out
+    state.user = { name: 'Guest', handle: 'guest', bio: '', avatarLetter: 'G', signedIn: false };
+    saveState(); renderAll();
+  } else {
+    // quick mock sign in prompt
+    const name = prompt('Your full name (will be public):','') || 'User';
+    let handle = prompt('Choose a short handle (no spaces):','user') || 'user'; handle = handle.replace(/\s+/g,'').toLowerCase();
+    state.user.name = name; state.user.handle = handle; state.user.signedIn = true; state.user.avatarLetter = name[0]?.toUpperCase()||'U';
+    saveState(); renderAll();
+  }
+});
+
+/* ---------- Misc controls ---------- */
+const clearDataBtn = document.getElementById('clearDataBtn');
+clearDataBtn.addEventListener('click', ()=>{ if(confirm('Clear all data (this resets posts and profile)?')){ localStorage.removeItem(STORAGE_KEY); state = { user: { name: 'Guest', handle: 'guest', bio: '', avatarLetter: 'G', signedIn:false }, posts: [] }; renderAll(); } });
+
+/* ---------- Helpers ---------- */
+function escapeHtml(s){ return String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('\"','&quot;') }
+function truncate(s,n=80){ if(s.length<=n) return s; return s.slice(0,n-1)+'…' }
+
+/* ---------- initial demo content ---------- */
+function seedDemo(){ if(state.posts.length>0) return;
+  state.posts.push({ id: uid('post'), author: { name: 'Alice', handle: 'alice' }, text: 'Welcome to MiniSocial — this is a demo post. Try posting, liking, and commenting!', createdAt: Date.now()-1000*60*60, likes: ['alice'], comments: [{id:uid('c'), handle:'alice', text:'First!', createdAt: Date.now()-1000*60}] });
+  state.posts.push({ id: uid('post'), author: { name: 'Bob', handle: 'bob' }, text: 'Prototyping a social feed using localStorage. No backend required for this demo.', createdAt: Date.now()-1000*60*30, likes: [], comments: [] });
+}
+
+function renderAll(){ renderProfile(); renderPosts(); renderTrending(); }
+
+/* ---------- Start ---------- */
+loadState(); seedDemo(); renderAll();
+
+/* Keyboard shortcuts */
+document.addEventListener('keydown', e=>{ if(e.key==='/' && document.activeElement.tagName!=='INPUT' && document.activeElement.tagName!=='TEXTAREA'){ e.preventDefault(); searchInput.focus(); } });
+
+</script>
+</body>
+</html>
